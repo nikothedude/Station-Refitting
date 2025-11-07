@@ -1,0 +1,2 @@
+name,id,tier,rarity,tech/manufacturer,tags,uiTags,base value,unlocked,hidden,hiddenEverywhere,cost_frigate,cost_dest,cost_cruiser,cost_capital,script,desc,short,sModDesc,sprite
+Station Blacklists,SR_stationBlacklister,,,,hide_in_codex,,,,TRUE,,0,0,0,0,niko_SR.hullmods.SR_stationBlacklister,Certain hullmods cannot be installed on an orbital station.,,,graphics/hullmods/generic_mod.png

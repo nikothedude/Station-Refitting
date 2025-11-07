@@ -11,8 +11,10 @@ import com.fs.starfarer.api.campaign.listeners.IndustryOptionProvider.IndustryOp
 import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.OrbitalStation
 import com.fs.starfarer.api.impl.campaign.ids.Industries
+import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import niko_SR.hullmods.SR_stationBlacklister
 
 class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
 
@@ -56,12 +58,8 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
         )
 
         tooltip.addPara(
-            "BE WARNED! Certain hullmods will NOT FUNCTION on a station!",
-            5f
-        ).color = Misc.getNegativeHighlightColor()
-
-        tooltip.addPara(
-            "ALL OP COSTS ARE DETERMINED BY STATION REFITTING! IF YOU HAVE GRIEVANCE, TAKE IT UP WITH NIKO AND NOT THE ORIGINAL AUTHOR!!!!!!!!!!!!!",
+            "BE WARNED! Certain hullmods will NOT FUNCTION on a station! A blacklist is in place to prevent some of it, but modded hullmods " +
+                "may slip through!",
             5f
         ).color = Misc.getNegativeHighlightColor()
     }
@@ -117,6 +115,10 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
 
             if (!station.isEmpty) {
                 val member = station.fleetData.membersListCopy.first()
+                val newVariant = member.variant.clone()
+                newVariant.source = VariantSource.REFIT
+                newVariant.hullVariantId = "${member.hullId}_${Misc.genUID()}"
+                member.setVariant(newVariant, false, false)
 
                 val existingCache = station.memoryWithoutUpdate[MODULE_CACHE] as? HashMap<String, ShipVariantAPI>
                 if (existingCache != null && existingCache.isNotEmpty()) {
@@ -170,7 +172,10 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
             val modules = HashMap<String, ShipVariantAPI>()
             for (slot in member.variant.moduleSlots) {
                 val variant = member.variant.getModuleVariant(slot)
-                modules[slot] = variant
+                val newVariant = variant.clone()
+                newVariant.source = VariantSource.REFIT
+                newVariant.hullVariantId = "${member.hullId}_${Misc.genUID()}"
+                modules[slot] = newVariant
             }
             station.memoryWithoutUpdate[MODULE_CACHE] = modules
         }

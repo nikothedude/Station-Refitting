@@ -3,6 +3,7 @@ package niko_SR
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.ShipVariantAPI
 import lunalib.lunaSettings.LunaSettings
+import niko_SR.hullmods.SR_stationBlacklister
 import org.lazywizard.lazylib.ext.json.getFloat
 import java.awt.Color
 import kotlin.collections.set
@@ -57,8 +58,9 @@ object SR_settings {
 
         // cant use hullidtovariantmap bc modules arent included
         for (variantId in Global.getSettings().allVariantIds) {
-            if (!variantId.contains(hullId)) continue
-            variants += Global.getSettings().getVariant(variantId)
+            val variant = Global.getSettings().getVariant(variantId)
+            if (variant.hullSpec?.hullId != hullId) continue
+            variants += variant
         }
 
         return variants
@@ -68,6 +70,7 @@ object SR_settings {
         for (entry in opCosts) {
             try {
                 val spec = Global.getSettings().getHullSpec(entry.key)
+                spec.addBuiltInMod(SR_stationBlacklister.HMOD_ID)
                 val op = entry.value
 
                 ReflectionUtils.invoke("setOrdnancePoints", spec, op)

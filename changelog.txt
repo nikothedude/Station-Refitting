@@ -1,3 +1,11 @@
+0.2.0
+
+Fixes high tech attack modules having lots of OP
+
+Fixes saving the game discarding your changes
+
+Added a hullmod blacklist to stations
+
 0.1.0
 
 Stations now automatically generate their OP based on variants

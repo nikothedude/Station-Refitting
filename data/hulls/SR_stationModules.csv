@@ -12,6 +12,7 @@ module_midline_bastion
 module_hightech_citadel
 module_hightech_hangar
 module_hightech_attack
+module_hightech_attack_minelayer
 
 remnant_weapon_platform2
 remnant_weapon_platform3

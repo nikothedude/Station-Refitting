@@ -27,8 +27,8 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
         val superResult = super.isUnsuitable(ind, allowUnderConstruction)
         if (superResult) return true
 
-        if (!ind.market.isPlayerOwned) return true
-        if (!ind.spec.hasTag(Industries.TAG_STATION)) return true
+        if (!ind.spec.hasTag(Industries.TAG_STATION) && !ind.spec.hasTag("artillery")) return true
+        if (!ind.market.isPlayerOwned && !Global.getSettings().isDevMode) return true
 
         return false
     }
@@ -59,6 +59,11 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
             "BE WARNED! Certain hullmods will NOT FUNCTION on a station!",
             5f
         ).color = Misc.getNegativeHighlightColor()
+
+        tooltip.addPara(
+            "ALL OP COSTS ARE DETERMINED BY STATION REFITTING! IF YOU HAVE GRIEVANCE, TAKE IT UP WITH NIKO AND NOT THE ORIGINAL AUTHOR!!!!!!!!!!!!!",
+            5f
+        ).color = Misc.getNegativeHighlightColor()
     }
 
     override fun getIndustryOptions(ind: Industry?): List<IndustryOptionData>? {
@@ -83,9 +88,14 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
 
         if (!opt.ind.isFunctional) return
 
-        val ui = Global.getSector().campaignUI
-        val casted = opt.ind as OrbitalStation
-        val station = casted.stationFleet
+        val station: CampaignFleetAPI
+        if (opt.ind is OrbitalStation) {
+            station = (opt.ind as OrbitalStation).stationFleet
+        } else if (ReflectionUtils.hasVariableOfName("stationFleet", opt.ind)) {
+            station = ReflectionUtils.get("stationFleet", opt.ind) as? CampaignFleetAPI ?: return
+        } else {
+            station = Misc.getStationFleet(opt.ind.market) ?: return
+        }
 
         if (!station.isEmpty) {
             val member = station.fleetData.membersListCopy.first()
@@ -94,6 +104,7 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
                 val inflater = station.memoryWithoutUpdate[INFLATER_CACHE] as? FleetInflater
                 if (inflater != null) {
                     station.inflater = inflater
+                    @Suppress("UsePropertyAccessSyntax")
                     station.setInflated(null)
                 }
             }
@@ -117,11 +128,10 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
                 }
             }
         }
-        VariantSaver(station).start()
+        VariantSaver.init(station)
         val oldPlayerFleet = Global.getSector().playerFleet
-        if (station != null) {
-            Global.getSector().playerFleet = casted.stationFleet
-        }
+        Global.getSector().playerFleet = station
+        val ui = Global.getSector().campaignUI
         ui.showCoreUITab(CoreUITabId.REFIT)
         Global.getSector().playerFleet = oldPlayerFleet
     }
@@ -129,6 +139,14 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
     class VariantSaver(
         val station: CampaignFleetAPI
     ): SR_baseNikoScript() {
+
+        companion object {
+            fun init(station: CampaignFleetAPI) {
+                if (Global.getSector().hasTransientScript(VariantSaver::class.java)) return
+                VariantSaver(station).start()
+            }
+        }
+
         override fun startImpl() {
             Global.getSector().addTransientScript(this)
         }

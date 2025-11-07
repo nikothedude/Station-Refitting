@@ -3,7 +3,7 @@
 	"name":"Station Refitting", # Displayed to the player
 	"author":"Niko",
     "utility":"true",
-	"version":"0.0.0",
+	"version":"0.1.0",
 	"description":"Enables the refitting of orbital stations, with OP limits. Technically nerfs stations due to this op limiting.",
     "gameVersion": "0.98a-RC5",
   	"jars":["jars/niko_stationRefitting.jar"],

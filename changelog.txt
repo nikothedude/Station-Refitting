@@ -1,3 +1,9 @@
+0.1.0
+
+Stations now automatically generate their OP based on variants
+
+Added a lunasetting for increasing/decreasing station OP
+
 0.0.0
 
 Initial

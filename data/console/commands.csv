@@ -1,0 +1,3 @@
+command,class,tags,syntax,help
+SR_reapplyOP,niko_SR.console.SR_reapplyOP,markets,SR_reapplyOP,Reapplies the OP costs from SR_stationOP.csv.
+SR_loadSettings,niko_SR.console.SR_loadSettings,debug,SR_loadSettings,Loads settings.

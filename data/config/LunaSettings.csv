@@ -1,0 +1,3 @@
+fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValue,maxValue,tab
+SR_generalHeader,General Header,Header,General Options,,,,,General
+SR_opMult,Auto-generated OP mult,Double,1.15,,"When generating OP for a station, will multiply the highest OP spent from any of its variants against this, then use that as the OP.",0.0,10.0,General

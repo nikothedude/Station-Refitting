@@ -9,6 +9,7 @@ import com.fs.starfarer.api.campaign.listeners.BaseIndustryOptionProvider
 import com.fs.starfarer.api.campaign.listeners.DialogCreatorUI
 import com.fs.starfarer.api.campaign.listeners.IndustryOptionProvider.IndustryOptionData
 import com.fs.starfarer.api.combat.ShipVariantAPI
+import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.OrbitalStation
 import com.fs.starfarer.api.impl.campaign.ids.Industries
 import com.fs.starfarer.api.loading.VariantSource
@@ -23,6 +24,12 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
         const val INFLATER_CACHE = "\$SR_inflaterCache"
         const val HULLID_CACHE = "\$SR_hullIdCache"
         const val MODULE_CACHE = "\$SR_moduleCache"
+
+        fun getAllVariants(fleet: CampaignFleetAPI, station: FleetMemberAPI): List<ShipVariantAPI> {
+            val variants = mutableListOf(station.variant)
+            val modules = fleet.memoryWithoutUpdate[MODULE_CACHE] as? HashMap<String, ShipVariantAPI> ?: return variants
+            return (variants + modules.values)
+        }
     }
 
     override fun isUnsuitable(ind: Industry, allowUnderConstruction: Boolean): Boolean {
@@ -108,27 +115,12 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
             }
             station.memoryWithoutUpdate[HULLID_CACHE] = member.hullId
         }
+        updateFromCache(station)
         station.inflateIfNeeded()
+        updateFromCache(station)
         if (station.inflater != null) {
             station.memoryWithoutUpdate[INFLATER_CACHE] = station.inflater
             station.inflater = null
-
-            if (!station.isEmpty) {
-                val member = station.fleetData.membersListCopy.first()
-                val newVariant = member.variant.clone()
-                newVariant.source = VariantSource.REFIT
-                newVariant.hullVariantId = "${member.hullId}_${Misc.genUID()}"
-                member.setVariant(newVariant, false, false)
-
-                val existingCache = station.memoryWithoutUpdate[MODULE_CACHE] as? HashMap<String, ShipVariantAPI>
-                if (existingCache != null && existingCache.isNotEmpty()) {
-                    for (entry in existingCache) {
-                        val slot = entry.key
-                        val variant = entry.value
-                        member.variant.setModuleVariant(slot, variant)
-                    }
-                }
-            }
         }
         VariantSaver.init(station)
         val oldPlayerFleet = Global.getSector().playerFleet
@@ -136,6 +128,31 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
         val ui = Global.getSector().campaignUI
         ui.showCoreUITab(CoreUITabId.REFIT)
         Global.getSector().playerFleet = oldPlayerFleet
+    }
+
+    fun updateFromCache(station: CampaignFleetAPI) {
+        if (!station.isEmpty) {
+            val member = station.fleetData.membersListCopy.first()
+            val newVariant = member.variant.clone()
+            newVariant.source = VariantSource.REFIT
+            newVariant.hullVariantId = "${member.hullId}_${Misc.genUID()}"
+            member.setVariant(newVariant, false, false)
+            val existingCache = station.memoryWithoutUpdate[MODULE_CACHE] as? HashMap<String, ShipVariantAPI>
+            if (existingCache != null && existingCache.isNotEmpty()) {
+                for (entry in existingCache.toMap()) {
+                    val slot = entry.key
+                    val variant = entry.value
+
+                    val existingVariant = member.variant.getModuleVariant(slot)
+                    if (existingVariant == null || existingVariant.hullSpec.hullId != variant.hullSpec.hullId) {
+                        existingCache -= slot
+                        continue
+                    }
+
+                    member.variant.setModuleVariant(slot, variant)
+                }
+            }
+        }
     }
 
     class VariantSaver(

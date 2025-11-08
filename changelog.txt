@@ -1,3 +1,7 @@
+0.2.1
+
+REALLY fixes fleet deflation
+
 0.2.0
 
 Fixes high tech attack modules having lots of OP

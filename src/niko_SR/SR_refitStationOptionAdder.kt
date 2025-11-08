@@ -16,6 +16,7 @@ import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import niko_SR.hullmods.SR_stationBlacklister
+import org.lazywizard.console.overlay.v2.misc.getParent
 
 class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
 

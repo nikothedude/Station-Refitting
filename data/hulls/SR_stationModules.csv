@@ -95,3 +95,17 @@ prv_module_battery1a
 prv_module_battery1b
 prv_module_bastion1a
 prv_module_bastion1b
+
+#goathead
+goat_module_combat_s
+goat_module_combat
+
+#XIII
+remnant_hangar1_xiii
+remnant_shield1_xiii
+remnant_shield2_xiii
+remnant_station1_xiii
+remnant_station2_xiii
+remnant_weapon_platform1_xiii
+remnant_weapon_platform2_xiii
+remnant_weapon_platform3_xiii

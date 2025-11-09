@@ -49,7 +49,7 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
         if (tooltip == null) return
 
         tooltip.addPara(
-            "Refit your orbital station. This option is disabled if the station is damaged, or otherwise non-combat capable.",
+            "Refit your orbital station.",
             0f
         )
 
@@ -76,14 +76,13 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
         if (ind == null) return null
         if (isUnsuitable(ind, true)) return null
 
-        val disabledText = if (!ind.isFunctional) " (Station disabled)" else ""
         val data = IndustryOptionData(
-            "Refit$disabledText",
+            "Refit",
             REFIT_OPT_ID,
             ind,
             this
         )
-        data.enabled = ind.isFunctional
+        //data.enabled = ind.isFunctional
 
         return listOf(data)
     }
@@ -92,7 +91,7 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
         if (opt == null || ui == null) return
         if (opt.id != REFIT_OPT_ID) return
 
-        if (!opt.ind.isFunctional) return
+        //if (!opt.ind.isFunctional) return
 
         val station: CampaignFleetAPI
         if (opt.ind is OrbitalStation) {

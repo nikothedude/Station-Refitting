@@ -22,7 +22,7 @@
     # This is used to launch directly to the forum thread from in the game.
     # The ID is the set of digits at the end of the forum thread URL before the dot.
     # For example: fractalsoftworks.com/forum/index.php?topic=8181.0 has an ID of 8181
-    "modThreadId":0,
+    "modThreadId":34439,
 
     # The current patch number
     # Notation is major.minor.patch, trailing zeros are ignored
@@ -30,8 +30,8 @@
     # If you use major.minor notation you can just leave patch as 0
     "modVersion":
     {
-        "major":0,
-        "minor":2,
-        "patch":2 # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
+        "major":1,
+        "minor":0,
+        "patch":0 # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
     },
 }

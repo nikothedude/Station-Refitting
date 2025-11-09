@@ -16,8 +16,18 @@ class SR_stationBlacklister: BaseHullMod() {
         const val HMOD_ID = "SR_stationBlacklister"
     }
 
-    fun isHmodIncompatible(hullmodId: String): Boolean {
+    fun isHmodIncompatible(hullmodId: String, station: ShipAPI): Boolean {
         val spec = Global.getSettings().getHullModSpec(hullmodId)
+
+        if (station.variant.hasHullMod("supercomputer") || station.variant.hasHullMod(HullMods.ADVANCED_TARGETING_CORE)) {
+            if (hullmodId == HullMods.DEDICATED_TARGETING_CORE || hullmodId == HullMods.INTEGRATED_TARGETING_UNIT) {
+                return true
+            }
+        }
+        /*if (station.variant.hasHullMod("always_detaches")) {
+            if (hullmodId == HullMods.REINFORCEDHULL) return true
+        }*/
+
         if (hullmodId == HullMods.SAFETYOVERRIDES) return true
         if (hullmodId == HullMods.SHROUDED_MANTLE) return true
         if (hullmodId == HullMods.OPERATIONS_CENTER) return true
@@ -33,7 +43,7 @@ class SR_stationBlacklister: BaseHullMod() {
         if (ship == null) return
 
         for (hmod in ship.variant.hullMods.toList()) {
-            if (!isHmodIncompatible(hmod)) continue
+            if (!isHmodIncompatible(hmod, ship)) continue
             MagicIncompatibleHullmods.removeHullmodWithWarning(
                 ship.variant,
                 hmod,

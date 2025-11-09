@@ -4,15 +4,15 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.ShipVariantAPI
 import lunalib.lunaSettings.LunaSettings
 import niko_SR.hullmods.SR_stationBlacklister
-import org.lazywizard.lazylib.ext.json.getFloat
-import java.awt.Color
 import kotlin.collections.set
+import kotlin.math.roundToInt
 
 object SR_settings {
 
     const val OVERRIDE_CSV_PATH = "data/hulls/SR_stationOP.csv"
     const val CSV_PATH = "data/hulls/SR_stationModules.csv"
     const val MODID = "niko_stationRefitting"
+    const val ROUND_TO_MULTIPLE = 5
     var opMult = 1.15f
 
     val opCosts = HashMap<String, Int>()
@@ -36,7 +36,8 @@ object SR_settings {
             if (variants.isEmpty()) {
                 continue
             }
-            val totalOpCost = (variants.maxOf { it.computeOPCost(null) } * opMult).toInt()
+            var totalOpCost = ((variants.maxOf { it.computeOPCost(null) } * opMult).toInt())
+            totalOpCost = (ROUND_TO_MULTIPLE * ((totalOpCost / ROUND_TO_MULTIPLE).toDouble().roundToInt()))
 
             opCosts[id] = totalOpCost
         }
@@ -75,7 +76,7 @@ object SR_settings {
 
                 ReflectionUtils.invoke("setOrdnancePoints", spec, op)
 
-            } catch (ex: RuntimeException) {
+            } catch (_: RuntimeException) {
                 // this is how we ignore bad hullspecs
                 continue
             }

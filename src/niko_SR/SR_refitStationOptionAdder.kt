@@ -17,6 +17,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import niko_SR.hullmods.SR_stationBlacklister
 import org.lazywizard.console.overlay.v2.misc.getParent
+import org.lazywizard.lazylib.MathUtils
 
 class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
 
@@ -25,6 +26,7 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
         const val INFLATER_CACHE = "\$SR_inflaterCache"
         const val HULLID_CACHE = "\$SR_hullIdCache"
         const val MODULE_CACHE = "\$SR_moduleCache"
+        const val DIST_NEEDED_TO_REFIT = 2500f
 
         fun getAllVariants(fleet: CampaignFleetAPI, station: FleetMemberAPI): List<ShipVariantAPI> {
             val variants = mutableListOf(station.variant)
@@ -48,28 +50,37 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
 
         if (tooltip == null) return
 
+        if (opt == null) return
         tooltip.addPara(
             "Refit your orbital station.",
             0f
         )
 
-        tooltip.addPara(
-            "This allows you to mount %s, %s and %s, however your faction will %s.",
-            5f,
-            Misc.getHighlightColor(),
-            "custom weaponry", "custom strikecraft", "custom hullmods", "not be able to cover the costs"
-        ).setHighlightColors(
-            Misc.getHighlightColor(),
-            Misc.getHighlightColor(),
-            Misc.getHighlightColor(),
-            Misc.getNegativeHighlightColor()
-        )
+        if (tooFar(opt.ind)) {
+            tooltip.addPara(
+                "You are too far from the orbital station to refit it.",
+                5f
+            ).color = Misc.getNegativeHighlightColor()
+        } else {
 
-        tooltip.addPara(
-            "BE WARNED! Certain hullmods will NOT FUNCTION on a station! A blacklist is in place to prevent some of it, but modded hullmods " +
-                "may slip through!",
-            5f
-        ).color = Misc.getNegativeHighlightColor()
+            tooltip.addPara(
+                "This allows you to mount %s, %s and %s, however your faction will %s.",
+                5f,
+                Misc.getHighlightColor(),
+                "custom weaponry", "custom strikecraft", "custom hullmods", "not be able to cover the costs"
+            ).setHighlightColors(
+                Misc.getHighlightColor(),
+                Misc.getHighlightColor(),
+                Misc.getHighlightColor(),
+                Misc.getNegativeHighlightColor()
+            )
+
+            tooltip.addPara(
+                "BE WARNED! Certain hullmods will NOT FUNCTION on a station! A blacklist is in place to prevent some of it, but modded hullmods " +
+                        "may slip through!",
+                5f
+            ).color = Misc.getNegativeHighlightColor()
+        }
     }
 
     override fun getIndustryOptions(ind: Industry?): List<IndustryOptionData>? {
@@ -82,9 +93,20 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
             ind,
             this
         )
-        //data.enabled = ind.isFunctional
+        data.enabled = !tooFar(ind)
 
         return listOf(data)
+    }
+
+    fun tooFar(ind: Industry): Boolean {
+        val playerFleet = Global.getSector().playerFleet ?: return false
+        val entity = ind.market?.primaryEntity ?: return false
+
+        if (!entity.containingLocation.isCurrentLocation) return true
+        val dist = MathUtils.getDistance(playerFleet, entity)
+        if (dist > DIST_NEEDED_TO_REFIT) return true
+
+        return false
     }
 
     override fun optionSelected(opt: IndustryOptionData?, ui: DialogCreatorUI?) {

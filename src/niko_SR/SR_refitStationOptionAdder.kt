@@ -39,7 +39,7 @@ class SR_refitStationOptionAdder: BaseIndustryOptionProvider() {
         val superResult = super.isUnsuitable(ind, allowUnderConstruction)
         if (superResult) return true
 
-        if (!ind.spec.hasTag(Industries.TAG_STATION) && !ind.spec.hasTag("artillery")) return true
+        if (!ind.spec.hasTag(Industries.TAG_STATION) && !ind.spec.hasTag("artillery") && !ind.spec.hasTag("arko_Upgradable")) return true
         if (!ind.market.isPlayerOwned && !Global.getSettings().isDevMode) return true
 
         return false

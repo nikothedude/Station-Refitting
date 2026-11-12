@@ -127,3 +127,14 @@ ass_arkship_left_t2m
 ass_arkship_front_t2h
 ass_arkship_right_t2h
 ass_arkship_left_t2h
+
+#Roider
+roider_station_core1
+roider_station_core2
+roider_station_core3
+roider_station_citadel_small
+roider_station_citadel_large1
+roider_station_citadel_large2
+roider_station_bastion
+roider_station_hangar
+roider_station_spur

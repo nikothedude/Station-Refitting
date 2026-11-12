@@ -7,7 +7,6 @@ import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.util.Misc
-import niko_SR.SR_baseNikoScript
 import org.magiclib.util.MagicIncompatibleHullmods
 
 class SR_stationBlacklister: BaseHullMod() {
